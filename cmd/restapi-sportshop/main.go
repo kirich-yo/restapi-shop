@@ -9,6 +9,7 @@ import (
 	"restapi-sportshop/pkg/db"
 	"restapi-sportshop/internal/user"
 	"restapi-sportshop/internal/auth"
+	"restapi-sportshop/internal/item"
 
 	"github.com/davecgh/go-spew/spew"
 )
@@ -29,12 +30,16 @@ func main() {
 		fmt.Printf("error: %v\n", err)
 		return
 	}
-	_ = db
+
+	itemRepo := item.NewItemRepository(db)
 
 	smux := http.NewServeMux()
 
-	_ = user.NewUserHandler(smux, user.UserHandlerDeps{})
 	_ = auth.NewAuthHandler(smux, auth.AuthHandlerDeps{})
+	_ = user.NewUserHandler(smux, user.UserHandlerDeps{})
+	_ = item.NewItemHandler(smux, item.ItemHandlerDeps{
+		ItemRepository: itemRepo,
+	})
 
 	srv := http.Server{
 		Addr: fmt.Sprintf(":%d", cfg.HTTPServerConfig.Port),
