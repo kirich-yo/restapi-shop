@@ -2,10 +2,11 @@ package user
 
 import (
 	"net/http"
-	"fmt"
-	"io"
 
 	"restapi-sportshop/pkg/res"
+	"restapi-sportshop/pkg/req"
+
+	"github.com/davecgh/go-spew/spew"
 )
 
 type UserHandler struct {
@@ -17,21 +18,14 @@ type UserHandlerDeps struct {
 func NewUserHandler(smux *http.ServeMux, deps UserHandlerDeps) *UserHandler {
 	handler := &UserHandler{}
 
-	smux.Handle("GET /user/{username}", handler.Create())
+	smux.Handle("GET /user/{username}", handler.Get())
+	smux.Handle("POST /user", handler.Create())
 
 	return handler
 }
 
-func (u *UserHandler) Create() http.HandlerFunc {
+func (u *UserHandler) Get() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		defer r.Body.Close()
-		body, err := io.ReadAll(r.Body)
-		if err != nil {
-			http.Error(w, "Cannot read body", http.StatusInternalServerError)
-			return
-		}
-		fmt.Println(string(body))
-
 		data := UserResponse{
 			ID: 456,
 			Username: r.PathValue("username"),
@@ -42,5 +36,20 @@ func (u *UserHandler) Create() http.HandlerFunc {
 		}
 
 		res.WriteDefault(w, http.StatusCreated, &data, r.Header)
+	}
+}
+
+func (u *UserHandler) Create() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		defer r.Body.Close()
+
+		body, err := req.HandleBody[UserRequest](r)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		spew.Dump(body)
+
+		w.WriteHeader(http.StatusCreated)
 	}
 }
