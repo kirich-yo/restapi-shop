@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"restapi-sportshop/configs"
+	"restapi-sportshop/pkg/db"
 	"restapi-sportshop/internal/user"
 	"restapi-sportshop/internal/auth"
 
@@ -23,6 +24,13 @@ func main() {
 
 	spew.Dump(cfg)
 
+	db, err := db.NewDb(cfg)
+	if err != nil {
+		fmt.Printf("error: %v\n", err)
+		return
+	}
+	_ = db
+
 	smux := http.NewServeMux()
 
 	_ = user.NewUserHandler(smux, user.UserHandlerDeps{})
@@ -33,6 +41,7 @@ func main() {
 		Handler: smux,
 	}
 
+	fmt.Printf("Listening on the port %d\n", cfg.HTTPServerConfig.Port)
 	err = srv.ListenAndServe()
 	if err != nil {
 		fmt.Printf("error: %v\n", err)

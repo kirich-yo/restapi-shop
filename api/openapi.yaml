@@ -18,10 +18,10 @@ servers:
 tags:
   - name: auth
     description: Authentification and authorization
-  - name: user
-    description: User management
   - name: item
     description: Everything about items
+  - name: user
+    description: User management
   - name: role
     description: Role and permission management
   - name: warehouse
@@ -354,7 +354,7 @@ paths:
         - auth
       summary: Log in and get an auth token
       description: Returns a JWT token that may be used later in the authorization process.
-      operationId: authUser
+      operationId: loginUser
       requestBody:
         $ref: '#/components/requestBodies/LoginForm'
       responses:
@@ -374,7 +374,7 @@ paths:
         - auth
       summary: Register a new user account
       description: Registers a new user.
-      operationId: addUser
+      operationId: registerUser
       requestBody:
         $ref: '#/components/requestBodies/User'
       responses:
@@ -383,12 +383,33 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/Token'
             application/xml:
               schema:
-                $ref: '#/components/schemas/User'
+                $ref: '#/components/schemas/Token'
         '400':
           description: Bad request.
+  /auth/refresh:
+    post:
+      tags:
+        - auth
+      summary: Refresh JWT token
+      description: Refreshes a JWT access token.
+      operationId: refreshToken
+      requestBody:
+        $ref: '#/components/requestBodies/RefreshToken'
+      responses:
+        '201':
+          description: JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Token'
+        '403':
+          description: Unauthorized.
   /role:
     get:
       tags:
@@ -1006,7 +1027,10 @@ components:
         name: order
     Token:
       properties:
-        token:
+        accessToken:
+          type: string
+          example: <token>
+        refreshToken:
           type: string
           example: <token>
         expiryDate:
@@ -1201,6 +1225,11 @@ components:
                 format: password
             xml:
               name: loginForm
+    RefreshToken:
+      description: A refresh token.
+      content:
+        text/plain:
+          example: <token>
   securitySchemes:
     sportshop_jwt:
       type: http
