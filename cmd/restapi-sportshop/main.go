@@ -7,6 +7,7 @@ import (
 
 	"restapi-sportshop/configs"
 	"restapi-sportshop/internal/user"
+	"restapi-sportshop/internal/auth"
 
 	"github.com/davecgh/go-spew/spew"
 )
@@ -25,6 +26,7 @@ func main() {
 	smux := http.NewServeMux()
 
 	_ = user.NewUserHandler(smux, user.UserHandlerDeps{})
+	_ = auth.NewAuthHandler(smux, auth.AuthHandlerDeps{})
 
 	srv := http.Server{
 		Addr: fmt.Sprintf(":%d", cfg.HTTPServerConfig.Port),
