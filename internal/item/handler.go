@@ -25,6 +25,7 @@ func NewItemHandler(smux *http.ServeMux, deps ItemHandlerDeps) *ItemHandler {
 
 	smux.Handle("GET /item/{itemID}", handler.Get())
 	smux.Handle("POST /item", handler.Create())
+	smux.Handle("DELETE /item/{itemID}", handler.Delete())
 
 	return handler
 }
@@ -79,5 +80,27 @@ func (handler *ItemHandler) Create() http.HandlerFunc {
 		}
 
 		w.WriteHeader(http.StatusCreated)
+	}
+}
+
+func (handler *ItemHandler) Delete() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		item_id, err := strconv.Atoi(r.PathValue("itemID"))
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		if item_id < 1 {
+			http.Error(w, "ID number cannot be negative or zero.", http.StatusBadRequest)
+			return
+		}
+
+		err = handler.ItemRepository.Delete(item_id)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		w.WriteHeader(http.StatusNoContent)
 	}
 }

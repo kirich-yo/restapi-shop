@@ -33,3 +33,12 @@ func (repo *ItemRepository) Create(item *Item) (*Item, error) {
 
 	return item, nil
 }
+
+func (repo *ItemRepository) Update(item *Item) (*Item, error) {
+	return nil, nil
+}
+
+func (repo *ItemRepository) Delete(itemID int) error {
+	result := repo.Database.DB.Delete(&Item{}, itemID)
+	return result.Error
+}
