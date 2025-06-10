@@ -111,7 +111,7 @@ paths:
           description: Invalid ID supplied.
         '404':
           description: Item not found.
-    put:
+    patch:
       tags:
         - item
       summary: Update item info
@@ -260,7 +260,7 @@ paths:
           description: Invalid username supplied.
         '404':
           description: User not found.
-    put:
+    patch:
       tags:
         - user
       summary: Change user account info
@@ -656,7 +656,7 @@ paths:
           description: Order not found.
       security:
         - sportshop_jwt: []
-    put:
+    patch:
       tags:
         - order
       summary: Change an order status by ID
@@ -744,7 +744,7 @@ paths:
         '404':
           description: Review not found.
 
-    put:
+    patch:
       tags:
         - review
       summary: Update a review by ID

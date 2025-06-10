@@ -3,6 +3,7 @@ package item
 import (
 	"net/http"
 	"strconv"
+	"fmt"
 
 	"restapi-sportshop/pkg/res"
 	"restapi-sportshop/pkg/req"
@@ -41,6 +42,10 @@ func (handler *ItemHandler) Get() http.HandlerFunc {
 			http.Error(w, "ID number cannot be negative or zero.", http.StatusBadRequest)
 			return
 		}
+
+		var count int64 = 0
+		_ = handler.ItemRepository.Count(&count)
+		fmt.Printf("Count: %d\n", count)
 
 		data, err := handler.ItemRepository.Get(item_id)
 		if err != nil {

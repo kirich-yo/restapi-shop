@@ -2,6 +2,8 @@ package item
 
 import (
 	"restapi-sportshop/pkg/db"
+
+	"gorm.io/gorm/clause"
 )
 
 type ItemRepository struct {
@@ -35,10 +37,20 @@ func (repo *ItemRepository) Create(item *Item) (*Item, error) {
 }
 
 func (repo *ItemRepository) Update(item *Item) (*Item, error) {
-	return nil, nil
+	result := repo.Database.DB.Clauses(clause.Returning{}).Updates(item)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return item, nil
 }
 
 func (repo *ItemRepository) Delete(itemID int) error {
 	result := repo.Database.DB.Delete(&Item{}, itemID)
+	return result.Error
+}
+
+func (repo *ItemRepository) Count(n *int64) error {
+	result := repo.Database.DB.Table("items").Where("deleted_at IS NULL").Count(n)
 	return result.Error
 }
