@@ -826,6 +826,10 @@ components:
         name:
           type: string
           example: Customer
+        permissions:
+          type: array
+          items:
+            type: string
       xml:
         name: role
     Category:
