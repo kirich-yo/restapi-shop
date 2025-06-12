@@ -26,6 +26,7 @@ func NewItemHandler(smux *http.ServeMux, deps ItemHandlerDeps) *ItemHandler {
 
 	smux.Handle("GET /item/{itemID}", handler.Get())
 	smux.Handle("POST /item", handler.Create())
+	smux.Handle("PATCH /item/{itemID}", handler.Update())
 	smux.Handle("DELETE /item/{itemID}", handler.Delete())
 
 	return handler
@@ -33,13 +34,9 @@ func NewItemHandler(smux *http.ServeMux, deps ItemHandlerDeps) *ItemHandler {
 
 func (handler *ItemHandler) Get() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		item_id, err := strconv.Atoi(r.PathValue("itemID"))
+		item_id, err := strconv.ParseUint(r.PathValue("itemID"), 10, 32)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-		if item_id < 1 {
-			http.Error(w, "ID number cannot be negative or zero.", http.StatusBadRequest)
 			return
 		}
 
@@ -47,7 +44,7 @@ func (handler *ItemHandler) Get() http.HandlerFunc {
 		_ = handler.ItemRepository.Count(&count)
 		fmt.Printf("Count: %d\n", count)
 
-		data, err := handler.ItemRepository.Get(item_id)
+		data, err := handler.ItemRepository.Get(uint(item_id))
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
@@ -69,14 +66,13 @@ func (handler *ItemHandler) Create() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		defer r.Body.Close()
 
-		body, err := req.HandleBody[ItemRequest](r)
+		body, err := req.HandleBody[ItemCreateRequest](r)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 
-		data := NewItem(body)
-		spew.Dump(data)
+		data := NewItem((*ItemRequest)(body))
 
 		_, err = handler.ItemRepository.Create(data)
 		if err != nil {
@@ -107,5 +103,34 @@ func (handler *ItemHandler) Delete() http.HandlerFunc {
 		}
 
 		w.WriteHeader(http.StatusNoContent)
+	}
+}
+
+func (handler *ItemHandler) Update() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		defer r.Body.Close()
+
+		item_id, err := strconv.ParseUint(r.PathValue("itemID"), 10, 32)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		body, err := req.HandleBody[ItemUpdateRequest](r)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		data := NewItem((*ItemRequest)(body))
+		data.ID = uint(item_id)
+
+		item, err := handler.ItemRepository.Update(data)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		res.WriteDefault(w, http.StatusOK, item, r.Header)
 	}
 }

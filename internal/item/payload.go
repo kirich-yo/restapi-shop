@@ -5,11 +5,27 @@ import (
 )
 
 type ItemRequest struct {
+	XMLName xml.Name
+	Name string
+	Price float64
+	SalePrice float64
+	PhotoURL string
+}
+
+type ItemCreateRequest struct {
 	XMLName xml.Name `json:"-" xml:"item"`
 	Name string `json:"name" xml:"name" validate:"required"`
 	Price float64 `json:"price" xml:"price" validate:"required"`
 	SalePrice float64 `json:"salePrice" xml:"salePrice"`
 	PhotoURL string `json:"photoURL" xml:"photoURL" validate:"http_url"`
+}
+
+type ItemUpdateRequest struct {
+	XMLName xml.Name `json:"-" xml:"item"`
+	Name string `json:"name" xml:"name"` 
+	Price float64 `json:"price" xml:"price"`
+	SalePrice float64 `json:"salePrice" xml:"salePrice"`
+	PhotoURL string `json:"photoURL" xml:"photoURL" validate:"omitempty,http_url"`
 }
 
 type ItemResponse struct {

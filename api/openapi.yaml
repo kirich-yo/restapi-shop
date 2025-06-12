@@ -129,6 +129,13 @@ paths:
       responses:
         '201':
           description: The item has been succesfully updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Item'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Item'
         '400':
           description: Invalid ID supplied.
         '401':
@@ -803,6 +810,124 @@ paths:
           description: The client does not have appropriate permissions to perform the operation.
       security:
         - sportshop_jwt: []
+  /cart:
+    post:
+      tags:
+        - cart
+      summary: Place a new cart
+      description: Creates a new cart.
+      operationId: addCart
+      requestBody:
+        $ref: '#/components/requestBodies/Cart'
+      responses:
+        '201':
+          description: The cart been successfully placed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Cart'
+        '400':
+          description: Bad request.
+        '401':
+          description: The client is not authorized.
+      security:
+        - sportshop_jwt: []
+  /cart/{cartID}:
+    get:
+      tags:
+        - cart
+      summary: Get a cart by ID
+      description: Returns a cart by ID.
+      operationId: getCart
+      parameters:
+        - name: cartID
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '200':
+          description: A cart.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Cart'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Cart'
+        '400':
+          description: Invalid ID supplied.
+        '401':
+          description: The client is not authorized.
+        '403':
+          description: The client does not have appropriate permissions to perform the operation.
+        '404':
+          description: Cart not found.
+      security:
+        - sportshop_jwt: []
+    patch:
+      tags:
+        - cart
+      summary: Change an order status by ID
+      description: Updates an order by ID.
+      operationId: updateOrder
+      parameters:
+        - name: cartID
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+      requestBody:
+        description: An order.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Order'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Order'
+      responses:
+        '201':
+          description: The order has been succesfully updated.
+        '400':
+          description: Invalid ID supplied.
+        '401':
+          description: The client is not authorized.
+        '403':
+          description: The client does not have appropriate permissions to perform the operation.
+        '404':
+          description: Order not found.
+      security:
+        - sportshop_jwt: []
+    delete:
+      tags:
+        - cart
+      summary: Delete an order by ID
+      description: Deletes an order by ID.
+      operationId: deleteCart
+      parameters:
+        - name: cartID
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        '204':
+          description: The order has been succesfully deleted.
+        '400':
+          description: Invalid ID supplied.
+        '401':
+          description: The client is not authorized.
+        '403':
+          description: The client does not have appropriate permissions to perform the operation.
+      security:
+        - sportshop_jwt: []
 components:
   schemas:
     Role:
@@ -975,10 +1100,14 @@ components:
         id:
           type: integer
           format: int32
-        user:
-          $ref: '#/components/schemas/User'
-        item:
-          $ref: '#/components/schemas/Item'
+        userID:
+          type: integer
+          format: int32
+          example: 789
+        itemID:
+          type: integer
+          format: int32
+          example: 123
         amount:
           type: integer
           format: int32
@@ -1198,6 +1327,33 @@ components:
                 example: This is a gift for my 16 yr old son who lifts weights at the gym. These are great for at home and very compact and easy to store. Love how he can adjust the weight size. Does come all together so this grandma definitely needed help lifting the pkg. Definitely recommend!
             xml:
               name: review
+    Cart:
+      description: A cart.
+      content:
+        application/json:
+          schema:
+            properties:
+              itemID:
+                type: integer
+                format: int32
+                example: 2
+              amount:
+                type: integer
+                format: int32
+                example: 2
+        application/xml:
+          schema:
+            properties:
+              itemID:
+                type: integer
+                format: int32
+                example: 2
+              amount:
+                type: integer
+                format: int32
+                example: 2
+            xml:
+              name: cart
     LoginForm:
       description: A login form.
       content:

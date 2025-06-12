@@ -16,7 +16,7 @@ func NewItemRepository(database *db.Db) *ItemRepository {
 	}
 }
 
-func (repo *ItemRepository) Get(itemID int) (*Item, error) {
+func (repo *ItemRepository) Get(itemID uint) (*Item, error) {
 	var item Item
 
 	result := repo.Database.DB.First(&item, "id = ?", itemID)
