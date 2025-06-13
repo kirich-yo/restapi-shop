@@ -18,8 +18,10 @@ type UserHandlerDeps struct {
 func NewUserHandler(smux *http.ServeMux, deps UserHandlerDeps) *UserHandler {
 	handler := &UserHandler{}
 
-	smux.Handle("GET /user/{username}", handler.Get())
-	smux.Handle("POST /user", handler.Create())
+	smux.HandleFunc("GET /user/{username}", handler.Get())
+	smux.HandleFunc("POST /user", handler.Create())
+	smux.HandleFunc("DELETE /user/{username}", handler.Delete())
+	smux.HandleFunc("GET /user/{username}/role", handler.GetRole())
 
 	return handler
 }
@@ -51,5 +53,15 @@ func (u *UserHandler) Create() http.HandlerFunc {
 		spew.Dump(body)
 
 		w.WriteHeader(http.StatusCreated)
+	}
+}
+
+func (u *UserHandler) Delete() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+	}
+}
+
+func (u *UserHandler) GetRole() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
 	}
 }

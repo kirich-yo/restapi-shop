@@ -1,8 +1,11 @@
 package item
 
 import (
+	"errors"
+
 	"restapi-sportshop/pkg/db"
 
+	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
 
@@ -45,7 +48,7 @@ func (repo *ItemRepository) Update(item *Item) (*Item, error) {
 	return item, nil
 }
 
-func (repo *ItemRepository) Delete(itemID int) error {
+func (repo *ItemRepository) Delete(itemID uint) error {
 	result := repo.Database.DB.Delete(&Item{}, itemID)
 	return result.Error
 }
@@ -53,4 +56,18 @@ func (repo *ItemRepository) Delete(itemID int) error {
 func (repo *ItemRepository) Count(n *int64) error {
 	result := repo.Database.DB.Table("items").Where("deleted_at IS NULL").Count(n)
 	return result.Error
+}
+
+func (repo *ItemRepository) IsExist(itemID uint) (bool, error) {
+	var item Item
+
+	result := repo.Database.DB.First(&item, "id = ?", itemID)
+	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+		return false, nil
+	}
+	if result.Error != nil {
+		return false, result.Error
+	}
+
+	return true, nil
 }

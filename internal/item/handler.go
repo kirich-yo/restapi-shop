@@ -3,12 +3,12 @@ package item
 import (
 	"net/http"
 	"strconv"
-	"fmt"
+	"errors"
 
 	"restapi-sportshop/pkg/res"
 	"restapi-sportshop/pkg/req"
 
-	"github.com/davecgh/go-spew/spew"
+	"gorm.io/gorm"
 )
 
 type ItemHandler struct {
@@ -40,11 +40,11 @@ func (handler *ItemHandler) Get() http.HandlerFunc {
 			return
 		}
 
-		var count int64 = 0
-		_ = handler.ItemRepository.Count(&count)
-		fmt.Printf("Count: %d\n", count)
-
 		data, err := handler.ItemRepository.Get(uint(item_id))
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			http.Error(w, err.Error(), http.StatusNotFound)
+			return
+		}
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
@@ -58,7 +58,7 @@ func (handler *ItemHandler) Get() http.HandlerFunc {
 			PhotoURL: data.PhotoURL,
 		}
 
-		res.WriteDefault(w, http.StatusCreated, body, r.Header)
+		res.WriteDefault(w, http.StatusOK, body, r.Header)
 	}
 }
 
@@ -86,17 +86,13 @@ func (handler *ItemHandler) Create() http.HandlerFunc {
 
 func (handler *ItemHandler) Delete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		item_id, err := strconv.Atoi(r.PathValue("itemID"))
+		item_id, err := strconv.ParseUint(r.PathValue("itemID"), 10, 32)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		if item_id < 1 {
-			http.Error(w, "ID number cannot be negative or zero.", http.StatusBadRequest)
-			return
-		}
 
-		err = handler.ItemRepository.Delete(item_id)
+		err = handler.ItemRepository.Delete(uint(item_id))
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
@@ -113,6 +109,16 @@ func (handler *ItemHandler) Update() http.HandlerFunc {
 		item_id, err := strconv.ParseUint(r.PathValue("itemID"), 10, 32)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		found, err := handler.ItemRepository.IsExist(uint(item_id))
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		if !found {
+			http.Error(w, "record not found", http.StatusNotFound)
 			return
 		}
 

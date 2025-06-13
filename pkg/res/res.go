@@ -21,12 +21,9 @@ func WriteXML(w http.ResponseWriter, code int, content any) {
 
 func WriteDefault(w http.ResponseWriter, code int, content any, header http.Header) {
 	accept_type := header.Get("Accept")
-	if strings.HasPrefix(accept_type, "application/json") {
-		WriteJSON(w, code, content)
-		return
-	}
 	if strings.HasPrefix(accept_type, "application/xml") {
 		WriteXML(w, code, content)
 		return
 	}
+	WriteJSON(w, code, content)
 }
