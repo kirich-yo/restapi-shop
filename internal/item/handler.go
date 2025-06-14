@@ -29,10 +29,20 @@ func NewItemHandler(smux *http.ServeMux, deps ItemHandlerDeps) *ItemHandler {
 		Logger: deps.Logger,
 	}
 
-	smux.Handle("GET /item/{itemID}", middleware.CORS(middleware.Logger(handler.Get(), handler.Logger)))
-	smux.Handle("POST /item", handler.Create())
-	smux.Handle("PATCH /item/{itemID}", handler.Update())
-	smux.Handle("DELETE /item/{itemID}", handler.Delete())
+	chain := middleware.Chain(
+		middleware.MiddlewareWithArgs{
+			First: middleware.Logger,
+			Second: []interface{}{handler.Logger},
+		},
+		middleware.MiddlewareWithArgs{
+			First: middleware.CORS,
+		},
+	)
+
+	smux.Handle("GET /item/{itemID}", chain(handler.Get()))
+	smux.Handle("POST /item", chain(handler.Create()))
+	smux.Handle("PATCH /item/{itemID}", chain(handler.Update()))
+	smux.Handle("DELETE /item/{itemID}", chain(handler.Delete()))
 
 	return handler
 }

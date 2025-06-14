@@ -6,7 +6,9 @@ import (
 	"time"
 )
 
-func Logger(next http.Handler, logger *slog.Logger) http.Handler {
+func Logger(next http.Handler, args ...interface{}) http.Handler {
+	logger := args[0].(*slog.Logger)
+
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		logger.Info("New request:",
 			slog.String("remoteAddr", r.RemoteAddr),
