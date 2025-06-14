@@ -4,27 +4,32 @@ import (
 	"net/http"
 	"strconv"
 	"errors"
+	"log/slog"
 
 	"restapi-sportshop/pkg/res"
 	"restapi-sportshop/pkg/req"
+	"restapi-sportshop/pkg/middleware"
 
 	"gorm.io/gorm"
 )
 
 type ItemHandler struct {
 	*ItemRepository
+	*slog.Logger
 }
 
 type ItemHandlerDeps struct {
 	*ItemRepository
+	*slog.Logger
 }
 
 func NewItemHandler(smux *http.ServeMux, deps ItemHandlerDeps) *ItemHandler {
 	handler := &ItemHandler{
 		ItemRepository: deps.ItemRepository,
+		Logger: deps.Logger,
 	}
 
-	smux.Handle("GET /item/{itemID}", handler.Get())
+	smux.Handle("GET /item/{itemID}", middleware.CORS(middleware.Logger(handler.Get(), handler.Logger)))
 	smux.Handle("POST /item", handler.Create())
 	smux.Handle("PATCH /item/{itemID}", handler.Update())
 	smux.Handle("DELETE /item/{itemID}", handler.Delete())

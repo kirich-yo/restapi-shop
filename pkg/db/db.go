@@ -25,7 +25,6 @@ func FormatDSN(db_conf *configs.DatabaseConnConfig) string {
 
 func NewDb(conf *configs.Config) (*Db, error) {
 	dsn := FormatDSN(&conf.DatabaseConnConfig)
-	fmt.Println(dsn)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		return nil, err

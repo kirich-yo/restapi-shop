@@ -4,9 +4,11 @@ import (
 	"fmt"
 	"os"
 	"net/http"
+	"log/slog"
 
 	"restapi-sportshop/configs"
 	"restapi-sportshop/pkg/db"
+	"restapi-sportshop/pkg/slogpretty"
 	"restapi-sportshop/internal/user"
 	"restapi-sportshop/internal/auth"
 	"restapi-sportshop/internal/item"
@@ -23,7 +25,9 @@ func main() {
 		return
 	}
 
-	spew.Dump(cfg)
+	logger := setupPrettySlog()
+
+	logger.Debug(spew.Sdump(cfg))
 
 	db, err := db.NewDb(cfg)
 	if err != nil {
@@ -39,6 +43,7 @@ func main() {
 	_ = user.NewUserHandler(smux, user.UserHandlerDeps{})
 	_ = item.NewItemHandler(smux, item.ItemHandlerDeps{
 		ItemRepository: itemRepo,
+		Logger: logger,
 	})
 
 	srv := http.Server{
@@ -46,9 +51,24 @@ func main() {
 		Handler: smux,
 	}
 
-	fmt.Printf("Listening on the port %d\n", cfg.HTTPServerConfig.Port)
+	logger.Info("Starting the server",
+		"port", cfg.HTTPServerConfig.Port,
+	)
+
 	err = srv.ListenAndServe()
 	if err != nil {
 		fmt.Printf("error: %v\n", err)
 	}
+}
+
+func setupPrettySlog() *slog.Logger {
+	opts := slogpretty.PrettyHandlerOptions{
+		SlogOpts: &slog.HandlerOptions{
+			Level: slog.LevelDebug,
+		},
+	}
+
+	handler := opts.NewPrettyHandler(os.Stdout)
+
+	return slog.New(handler)
 }
