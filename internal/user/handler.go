@@ -1,22 +1,29 @@
 package user
 
 import (
+	"errors"
+	"time"
 	"net/http"
 
 	"restapi-sportshop/pkg/res"
 	"restapi-sportshop/pkg/req"
 
+	"gorm.io/gorm"
 	"github.com/davecgh/go-spew/spew"
 )
 
 type UserHandler struct {
+	*UserRepository
 }
 
 type UserHandlerDeps struct {
+	*UserRepository
 }
 
 func NewUserHandler(smux *http.ServeMux, deps UserHandlerDeps) *UserHandler {
-	handler := &UserHandler{}
+	handler := &UserHandler{
+		UserRepository: deps.UserRepository,
+	}
 
 	smux.HandleFunc("GET /user/{username}", handler.Get())
 	smux.HandleFunc("POST /user", handler.Create())
@@ -26,22 +33,34 @@ func NewUserHandler(smux *http.ServeMux, deps UserHandlerDeps) *UserHandler {
 	return handler
 }
 
-func (u *UserHandler) Get() http.HandlerFunc {
+func (handler *UserHandler) Get() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		data := UserResponse{
-			ID: 456,
-			Username: r.PathValue("username"),
-			FirstName: "John",
-			LastName: "Doe",
-			DateOfBirth: "2000-01-01",
-			PhotoURL: "https://cdn.sportshop.com/59b1f1ce-7299-4e9b-93c4-cb5b94641864.jpg",
-		}
+		username := r.PathValue("username")
 
-		res.WriteDefault(w, http.StatusCreated, &data, r.Header)
+                data, err := handler.UserRepository.GetByUsername(username)
+                if errors.Is(err, gorm.ErrRecordNotFound) {
+                        http.Error(w, err.Error(), http.StatusNotFound)
+                        return
+                }
+                if err != nil {
+                        http.Error(w, err.Error(), http.StatusBadRequest)
+                        return
+                }
+
+                body := &UserResponse{
+                        ID: data.ID,
+                        Username: data.Username,
+			FirstName: data.FirstName,
+			LastName: data.LastName,
+			DateOfBirth: time.Time(data.DateOfBirth).Format(time.DateOnly),
+                        PhotoURL: data.PhotoURL,
+                }
+
+                res.WriteDefault(w, http.StatusOK, body, r.Header)
 	}
 }
 
-func (u *UserHandler) Create() http.HandlerFunc {
+func (handler *UserHandler) Create() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		defer r.Body.Close()
 
@@ -56,12 +75,12 @@ func (u *UserHandler) Create() http.HandlerFunc {
 	}
 }
 
-func (u *UserHandler) Delete() http.HandlerFunc {
+func (handler *UserHandler) Delete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (u *UserHandler) GetRole() http.HandlerFunc {
+func (handler *UserHandler) GetRole() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 	}
 }

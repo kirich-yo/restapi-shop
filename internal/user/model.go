@@ -15,3 +15,9 @@ type User struct {
 	RoleID uint `json:"role_id"`
 	Password string `password`
 }
+
+/*
+func NewUser(data *auth.RegisterRequest) *User {
+	return nil
+}
+*/

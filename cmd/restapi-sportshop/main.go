@@ -36,11 +36,19 @@ func main() {
 	}
 
 	itemRepo := item.NewItemRepository(db)
+	userRepo := user.NewUserRepository(db)
+
+	authService := auth.NewAuthService(userRepo)
 
 	smux := http.NewServeMux()
 
-	_ = auth.NewAuthHandler(smux, auth.AuthHandlerDeps{})
-	_ = user.NewUserHandler(smux, user.UserHandlerDeps{})
+	_ = auth.NewAuthHandler(smux, auth.AuthHandlerDeps{
+		AuthService: authService,
+		Logger: logger,
+	})
+	_ = user.NewUserHandler(smux, user.UserHandlerDeps{
+		UserRepository: userRepo,
+	})
 	_ = item.NewItemHandler(smux, item.ItemHandlerDeps{
 		ItemRepository: itemRepo,
 		Logger: logger,
