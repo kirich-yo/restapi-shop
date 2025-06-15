@@ -43,6 +43,7 @@ func main() {
 	smux := http.NewServeMux()
 
 	_ = auth.NewAuthHandler(smux, auth.AuthHandlerDeps{
+		Config: cfg,
 		AuthService: authService,
 		Logger: logger,
 	})
