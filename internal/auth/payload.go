@@ -17,9 +17,3 @@ type RegisterRequest struct {
 type RefreshRequest struct {
 	RefreshToken string
 }
-
-type JWTResponse struct {
-	AccessToken string
-	RefreshToken string
-	ExpiryDate string
-}

@@ -19,15 +19,29 @@ func NewAuthService(userRepository *user.UserRepository) *AuthService {
 	}
 }
 
-func (srv *AuthService) Register(data *RegisterRequest) (*JWTResponse, error) {
+func (srv *AuthService) Login(data *LoginRequest) error {
+	loginUser, err := srv.UserRepository.GetByUsername(data.Username)
+	if err != nil {
+		return err
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(loginUser.Password), []byte(data.Password))
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (srv *AuthService) Register(data *RegisterRequest) error {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(data.Password), bcrypt.DefaultCost)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	parsedDate, err := time.Parse(time.DateOnly, data.DateOfBirth)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	newUser := &user.User{
@@ -42,8 +56,8 @@ func (srv *AuthService) Register(data *RegisterRequest) (*JWTResponse, error) {
 
 	_, err = srv.UserRepository.Create(newUser)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return nil, nil
+	return nil
 }

@@ -49,6 +49,31 @@ func NewAuthHandler(smux *http.ServeMux, deps AuthHandlerDeps) *AuthHandler {
 
 func (handler *AuthHandler) Login() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		defer r.Body.Close()
+
+		body, err := req.HandleBody[LoginRequest](r)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		err = handler.AuthService.Login(body)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusUnauthorized)
+			return
+		}
+
+		token := jwt.NewJWT(handler.Config.AuthConfig.Secret)
+
+		s, err := token.Create(body.Username)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set("Content-Type", "plain/text; encoding=utf-8")
+		w.WriteHeader(http.StatusOK)
+		io.WriteString(w, s)
 	}
 }
 
@@ -62,7 +87,7 @@ func (handler *AuthHandler) Register() http.HandlerFunc {
 			return
 		}
 
-		_, err = handler.AuthService.Register(body)
+		err = handler.AuthService.Register(body)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
