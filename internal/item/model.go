@@ -2,6 +2,8 @@ package item
 
 import (
 	"gorm.io/gorm"
+
+	"restapi-sportshop/internal/review"
 )
 
 type Item struct {
@@ -10,6 +12,7 @@ type Item struct {
 	Price float64 `json:"price"`
 	SalePrice float64 `json:"sale_price"`
 	PhotoURL string `json:"photo_url"`
+	Reviews []review.Review `gorm:"constraints:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }
 
 func NewItem(r *ItemRequest) *Item {

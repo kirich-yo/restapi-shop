@@ -3,6 +3,8 @@ package user
 import (
 	"gorm.io/gorm"
 	"gorm.io/datatypes"
+
+	"restapi-sportshop/internal/review"
 )
 
 type User struct {
@@ -13,7 +15,8 @@ type User struct {
 	DateOfBirth datatypes.Date `json:"date_of_birth"`
 	PhotoURL string `json:"photo_url"`
 	RoleID uint `json:"role_id"`
-	Password string `password`
+	Password string `json:"password"`
+	Reviews []review.Review `gorm:"constraints:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 }
 
 /*

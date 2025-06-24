@@ -10,6 +10,7 @@ import (
 	"restapi-sportshop/configs"
 	"restapi-sportshop/internal/user"
 	"restapi-sportshop/internal/item"
+	"restapi-sportshop/internal/review"
 )
 
 func FormatDSN(db_conf *configs.DatabaseConnConfig) string {
@@ -33,5 +34,5 @@ func main() {
 		panic(err)
 	}
 
-	db.AutoMigrate(&user.User{}, &item.Item{})
+	db.AutoMigrate(&user.User{}, &item.Item{}, &review.Review{})
 }

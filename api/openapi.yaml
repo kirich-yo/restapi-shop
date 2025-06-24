@@ -412,29 +412,6 @@ paths:
           description: Bad request.
         '500':
           description: Internal server error.
-  /auth/refresh:
-    post:
-      tags:
-        - auth
-      summary: Refresh JWT token
-      description: Refreshes a JWT access token.
-      operationId: refreshToken
-      requestBody:
-        $ref: '#/components/requestBodies/RefreshToken'
-      responses:
-        '201':
-          description: JWT token
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Token'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/Token'
-        '401':
-          description: Unauthorized.
-        '500':
-          description: Internal server error.
   /role:
     get:
       tags:
@@ -1173,17 +1150,8 @@ components:
       xml:
         name: order
     Token:
-      properties:
-        accessToken:
-          type: string
-          example: <token>
-        refreshToken:
-          type: string
-          example: <token>
-        expiryDate:
-          type: string
-          format: date-time
-          example: '2025-02-13T10:45:27Z'
+      type: string
+      example: <token>
   requestBodies:
     Item:
       description: An item.
@@ -1401,11 +1369,6 @@ components:
                 format: password
             xml:
               name: loginForm
-    RefreshToken:
-      description: A refresh token.
-      content:
-        text/plain:
-          example: <token>
   securitySchemes:
     sportshop_jwt:
       type: http

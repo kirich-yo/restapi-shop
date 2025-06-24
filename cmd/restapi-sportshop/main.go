@@ -12,6 +12,7 @@ import (
 	"restapi-sportshop/internal/user"
 	"restapi-sportshop/internal/auth"
 	"restapi-sportshop/internal/item"
+	"restapi-sportshop/internal/review"
 
 	"github.com/davecgh/go-spew/spew"
 )
@@ -37,6 +38,7 @@ func main() {
 
 	itemRepo := item.NewItemRepository(db)
 	userRepo := user.NewUserRepository(db)
+	reviewRepo := review.NewReviewRepository(db)
 
 	authService := auth.NewAuthService(userRepo)
 
@@ -53,6 +55,9 @@ func main() {
 	_ = item.NewItemHandler(smux, item.ItemHandlerDeps{
 		ItemRepository: itemRepo,
 		Logger: logger,
+	})
+	_ = review.NewReviewHandler(smux, review.ReviewHandlerDeps{
+		ReviewRepository: reviewRepo,
 	})
 
 	srv := http.Server{
