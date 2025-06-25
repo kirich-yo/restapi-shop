@@ -13,3 +13,14 @@ type Review struct {
 	Disadvantages string `json:"disadvantages"`
 	Description string `json:"description"`
 }
+
+func NewReview(r *ReviewRequest, userID uint) *Review {
+	return &Review{
+		UserID: userID,
+		ItemID: r.ItemID,
+		Rating: r.Rating,
+		Advantages: r.Advantages,
+		Disadvantages: r.Disadvantages,
+		Description: r.Description,
+	}
+}

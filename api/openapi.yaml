@@ -221,41 +221,6 @@ paths:
           description: Item not found.
         '500':
           description: Internal server error.
-    post:
-      tags:
-        - item
-      summary: Publish an item review
-      description: Adds a review to the item.
-      operationId: addItemReview
-      parameters:
-        - name: itemID
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: int32
-      requestBody:
-        $ref: '#/components/requestBodies/Review'
-      responses:
-        '201':
-          description: The review has been successfully added.
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Review'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/Review'
-        '400':
-          description: Invalid ID supplied.
-        '401':
-          description: The client is not authorized.
-        '404':
-          description: Item not found.
-        '500':
-          description: Internal server error.
-      security:
-        - sportshop_jwt: []
   /user/{username}:
     get:
       tags:
@@ -719,6 +684,35 @@ paths:
           description: The client is not authorized.
         '403':
           description: The client does not have appropriate permissions to perform the operation.
+      security:
+        - sportshop_jwt: []
+  /review:
+    post:
+      tags:
+        - review
+      summary: Publish an item review
+      description: Adds a review to the item.
+      operationId: addItemReview
+      requestBody:
+        $ref: '#/components/requestBodies/Review'
+      responses:
+        '201':
+          description: The review has been successfully added.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Review'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Review'
+        '400':
+          description: Invalid ID supplied.
+        '401':
+          description: The client is not authorized.
+        '404':
+          description: Item not found.
+        '500':
+          description: Internal server error.
       security:
         - sportshop_jwt: []
   /review/{reviewID}:
@@ -1284,6 +1278,10 @@ components:
         application/json:
           schema:
             properties:
+              itemID:
+                type: integer
+                format: int32
+                example: 123
               rating:
                 type: integer
                 format: int32

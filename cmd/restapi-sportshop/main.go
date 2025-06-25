@@ -57,6 +57,7 @@ func main() {
 		Logger: logger,
 	})
 	_ = review.NewReviewHandler(smux, review.ReviewHandlerDeps{
+		Config: cfg,
 		ReviewRepository: reviewRepo,
 	})
 

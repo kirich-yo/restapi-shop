@@ -24,3 +24,7 @@ func (repo *ReviewRepository) Get(reviewID uint) (*Review, error) {
 
 	return &res, nil
 }
+
+func (repo *ReviewRepository) Create(review *Review) (*Review, error) {
+	return nil, nil
+}
