@@ -57,7 +57,7 @@ func (handler *AuthHandler) Login() http.HandlerFunc {
 			return
 		}
 
-		err = handler.AuthService.Login(body)
+		userID, err := handler.AuthService.Login(body)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusUnauthorized)
 			return
@@ -65,7 +65,7 @@ func (handler *AuthHandler) Login() http.HandlerFunc {
 
 		token := jwt.NewJWT(handler.Config.AuthConfig.Secret)
 
-		s, err := token.Create(body.Username)
+		s, err := token.Create(userID, handler.Config.AuthConfig.TokenLifetime)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -87,7 +87,7 @@ func (handler *AuthHandler) Register() http.HandlerFunc {
 			return
 		}
 
-		err = handler.AuthService.Register(body)
+		userID, err := handler.AuthService.Register(body)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
@@ -95,7 +95,7 @@ func (handler *AuthHandler) Register() http.HandlerFunc {
 
 		token := jwt.NewJWT(handler.Config.AuthConfig.Secret)
 
-		s, err := token.Create(body.Username)
+		s, err := token.Create(userID, handler.Config.AuthConfig.TokenLifetime)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return

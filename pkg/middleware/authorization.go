@@ -5,6 +5,7 @@ import (
 	"strings"
 	"context"
 
+	"restapi-sportshop/configs"
 	"restapi-sportshop/pkg/jwt"
 )
 
@@ -13,7 +14,7 @@ const (
 )
 
 func Authorization(next http.Handler, args ...interface{}) http.Handler {
-	secret := args[0].(string)
+	cfg := args[0].(*configs.Config)
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		token := r.Header.Get("Authorization")
@@ -23,7 +24,7 @@ func Authorization(next http.Handler, args ...interface{}) http.Handler {
 		}
 
 		token = strings.TrimPrefix(token, "Bearer ")
-		j := jwt.NewJWT(secret)
+		j := jwt.NewJWT(cfg.AuthConfig.Secret)
 
 		data, err := j.Parse(token)
 		if err != nil {
@@ -31,7 +32,7 @@ func Authorization(next http.Handler, args ...interface{}) http.Handler {
 			return
 		}
 
-		ctx := context.WithValue(r.Context(), ContextUsernameKey, data.Username)
+		ctx := context.WithValue(r.Context(), ContextUsernameKey, data.UserID)
 		ctxReq := r.WithContext(ctx)
 
 		next.ServeHTTP(w, ctxReq)

@@ -59,6 +59,7 @@ func main() {
 	_ = review.NewReviewHandler(smux, review.ReviewHandlerDeps{
 		Config: cfg,
 		ReviewRepository: reviewRepo,
+		Logger: logger,
 	})
 
 	srv := http.Server{

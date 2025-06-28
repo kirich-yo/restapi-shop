@@ -18,6 +18,7 @@ type DatabaseConnConfig struct {
 
 type AuthConfig struct {
 	Secret string `yaml:"secret" env-required:"true"`
+	TokenLifetime time.Duration `yaml:"token_lifetime" env-default:"5m"`
 }
 
 type HTTPServerConfig struct {

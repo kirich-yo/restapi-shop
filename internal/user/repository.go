@@ -36,6 +36,17 @@ func (repo *UserRepository) GetByUsername(username string) (*User, error) {
 	return &user, nil
 }
 
+func (repo *UserRepository) GetIDByUsername(username string) (uint, error) {
+	var user User
+
+	result := repo.Database.DB.Select("id").First(&user, "username = ?", username)
+	if result.Error != nil {
+		return 0, result.Error
+	}
+
+	return user.ID, nil
+}
+
 func (repo *UserRepository) Create(user *User) (*User, error) {
 	result := repo.Database.DB.Create(user)
 	if result.Error != nil {

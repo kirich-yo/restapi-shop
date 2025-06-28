@@ -26,5 +26,20 @@ func (repo *ReviewRepository) Get(reviewID uint) (*Review, error) {
 }
 
 func (repo *ReviewRepository) Create(review *Review) (*Review, error) {
+	result := repo.Database.DB.Create(review)
+
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return review, nil
+}
+
+func (repo *ReviewRepository) Update(review *Review) (*Review, error) {
 	return nil, nil
+}
+
+func (repo *ReviewRepository) Delete(reviewID uint) error {
+	result := repo.Database.DB.Delete(&Review{}, reviewID)
+	return result.Error
 }

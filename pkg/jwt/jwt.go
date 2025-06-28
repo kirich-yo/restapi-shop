@@ -2,6 +2,7 @@ package jwt
 
 import (
 	"time"
+	"strconv"
 
 	"github.com/golang-jwt/jwt/v5"
 )
@@ -11,7 +12,7 @@ type JWT struct {
 }
 
 type JWTData struct {
-	Username string
+	UserID uint
 	IssuedAt time.Time
 	ExpirationTime time.Time
 }
@@ -22,13 +23,15 @@ func NewJWT(secret string) *JWT {
 	}
 }
 
-func (j *JWT) Create(username string) (string, error) {
+func (j *JWT) Create(userID uint, lifetime time.Duration) (string, error) {
 	now := time.Now()
 
+	sub := strconv.FormatUint(uint64(userID), 10)
+
 	t := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"sub": username,
+		"sub": sub,
 		"iat": now.Unix(),
-		"exp": now.Add(time.Minute * 10).Unix(),
+		"exp": now.Add(lifetime).Unix(),
 	})
 
 	s, err := t.SignedString([]byte(j.Secret))
@@ -64,8 +67,10 @@ func (j *JWT) Parse(token string) (*JWTData, error) {
 		return nil, err
 	}
 
+	userID, err := strconv.ParseUint(sub, 10, 32)
+
 	return &JWTData{
-		Username: sub,
+		UserID: uint(userID),
 		IssuedAt: iat.Time,
 		ExpirationTime: exp.Time,
 	}, nil

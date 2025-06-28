@@ -19,29 +19,29 @@ func NewAuthService(userRepository *user.UserRepository) *AuthService {
 	}
 }
 
-func (srv *AuthService) Login(data *LoginRequest) error {
+func (srv *AuthService) Login(data *LoginRequest) (uint, error) {
 	loginUser, err := srv.UserRepository.GetByUsername(data.Username)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(loginUser.Password), []byte(data.Password))
 	if err != nil {
-		return err
+		return 0, err
 	}
 
-	return nil
+	return loginUser.ID, nil
 }
 
-func (srv *AuthService) Register(data *RegisterRequest) error {
+func (srv *AuthService) Register(data *RegisterRequest) (uint, error) {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(data.Password), bcrypt.DefaultCost)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
 	parsedDate, err := time.Parse(time.DateOnly, data.DateOfBirth)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
 	newUser := &user.User{
@@ -54,10 +54,10 @@ func (srv *AuthService) Register(data *RegisterRequest) error {
 		Password: string(hashedPassword),
 	}
 
-	_, err = srv.UserRepository.Create(newUser)
+	newUser, err = srv.UserRepository.Create(newUser)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
-	return nil
+	return newUser.ID, nil
 }
