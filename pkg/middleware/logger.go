@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"log/slog"
 	"time"
+	"fmt"
 )
 
 func Logger(next http.Handler, args ...interface{}) http.Handler {
@@ -15,6 +16,7 @@ func Logger(next http.Handler, args ...interface{}) http.Handler {
 			slog.String("method", r.Method),
 			slog.String("path", r.RequestURI),
 			slog.String("userAgent", r.Header.Get("User-Agent")),
+			slog.String("contentType", r.Header.Get("Content-Type")),
 		)
 
 		ww := NewResponseWriterWrapper(w)
@@ -23,7 +25,7 @@ func Logger(next http.Handler, args ...interface{}) http.Handler {
 		next.ServeHTTP(ww, r)
 
 		logger.Info("Request completed:",
-			slog.Int("statusCode", ww.StatusCode),
+			slog.String("status", fmt.Sprintf("%d %s", ww.StatusCode, http.StatusText(ww.StatusCode))),
 			slog.String("timeElapsed", time.Since(t).String()),
 		)
 	})

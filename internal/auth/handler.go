@@ -38,6 +38,10 @@ func NewAuthHandler(smux *http.ServeMux, deps AuthHandlerDeps) *AuthHandler {
                 middleware.MiddlewareWithArgs{
                         First: middleware.CORS,
                 },
+		middleware.MiddlewareWithArgs{
+			First: middleware.Recoverer,
+                        Second: []interface{}{handler.Logger},
+		},
         )
 
 	smux.Handle("POST /auth/login", chain(handler.Login()))

@@ -44,6 +44,7 @@ func NewReviewHandler(smux *http.ServeMux, deps ReviewHandlerDeps) *ReviewHandle
 		},
 		middleware.MiddlewareWithArgs{
 			First: middleware.Recoverer,
+			Second: []interface{}{handler.Logger},
 		},
         )
 
@@ -113,6 +114,8 @@ func (handler *ReviewHandler) Get() http.HandlerFunc {
 
 func (handler *ReviewHandler) Update() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		var test *ReviewResponse = nil
+		_ = test.ID
 	}
 }
 

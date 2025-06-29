@@ -5,6 +5,9 @@ import (
 	"strings"
 	"encoding/json"
 	"encoding/xml"
+	"bufio"
+
+	"restapi-sportshop/pkg/form"
 )
 
 func DecodeJSON[T any](r *http.Request) (*T, error) {
@@ -29,6 +32,20 @@ func DecodeXML[T any](r *http.Request) (*T, error) {
 	return &payload, nil
 }
 
+func DecodeForm[T any](r *http.Request) (*T, error) {
+	var payload T
+
+	rd := bufio.NewReader(r.Body)
+	encodedForm, _ := rd.ReadString('\n')
+
+	err := form.Decode(&payload, encodedForm)
+	if err != nil {
+		return nil, err
+	}
+
+	return &payload, nil
+}
+
 func DecodeDefault[T any](r *http.Request) (*T, error) {
 	content_type := r.Header.Get("Content-Type")
         if strings.HasPrefix(content_type, "application/json") {
@@ -40,6 +57,13 @@ func DecodeDefault[T any](r *http.Request) (*T, error) {
         }
         if strings.HasPrefix(content_type, "application/xml") {
 		payload, err := DecodeXML[T](r)
+		if err != nil {
+			return nil, err
+		}
+		return payload, nil
+        }
+        if strings.HasPrefix(content_type, "application/x-www-form-urlencoded") {
+		payload, err := DecodeForm[T](r)
 		if err != nil {
 			return nil, err
 		}
