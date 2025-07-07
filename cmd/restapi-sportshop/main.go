@@ -41,6 +41,7 @@ func main() {
 	reviewRepo := review.NewReviewRepository(db)
 
 	authService := auth.NewAuthService(userRepo)
+	reviewService := review.NewReviewService(reviewRepo)
 
 	smux := http.NewServeMux()
 
@@ -58,7 +59,7 @@ func main() {
 	})
 	_ = review.NewReviewHandler(smux, review.ReviewHandlerDeps{
 		Config: cfg,
-		ReviewRepository: reviewRepo,
+		ReviewService: reviewService,
 		Logger: logger,
 	})
 

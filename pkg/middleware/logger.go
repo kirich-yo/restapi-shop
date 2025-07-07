@@ -17,6 +17,7 @@ func Logger(next http.Handler, args ...interface{}) http.Handler {
 			slog.String("path", r.RequestURI),
 			slog.String("userAgent", r.Header.Get("User-Agent")),
 			slog.String("contentType", r.Header.Get("Content-Type")),
+			slog.String("accept", r.Header.Get("Accept")),
 		)
 
 		ww := NewResponseWriterWrapper(w)
@@ -27,6 +28,7 @@ func Logger(next http.Handler, args ...interface{}) http.Handler {
 		logger.Info("Request completed:",
 			slog.String("status", fmt.Sprintf("%d %s", ww.StatusCode, http.StatusText(ww.StatusCode))),
 			slog.String("timeElapsed", time.Since(t).String()),
+			slog.String("contentType", ww.Headers.Get("Content-Type")),
 		)
 	})
 }

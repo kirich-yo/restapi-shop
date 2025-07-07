@@ -7,6 +7,7 @@ import (
 type ResponseWriterWrapper struct {
 	http.ResponseWriter
 	StatusCode int
+	Headers http.Header
 }
 
 func NewResponseWriterWrapper(w http.ResponseWriter) *ResponseWriterWrapper {
@@ -18,4 +19,5 @@ func NewResponseWriterWrapper(w http.ResponseWriter) *ResponseWriterWrapper {
 func (ww *ResponseWriterWrapper) WriteHeader(code int) {
 	ww.ResponseWriter.WriteHeader(code)
 	ww.StatusCode = code
+	ww.Headers = ww.ResponseWriter.Header()
 }

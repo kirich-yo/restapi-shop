@@ -12,20 +12,20 @@ import (
 )
 
 type ReviewHandlerDeps struct {
-	*ReviewRepository
+	*ReviewService
 	*configs.Config
 	*slog.Logger
 }
 
 type ReviewHandler struct {
-	*ReviewRepository
+	*ReviewService
 	*configs.Config
 	*slog.Logger
 }
 
 func NewReviewHandler(smux *http.ServeMux, deps ReviewHandlerDeps) *ReviewHandler {
 	handler := &ReviewHandler{
-		ReviewRepository: deps.ReviewRepository,
+		ReviewService: deps.ReviewService,
 		Config: deps.Config,
 		Logger: deps.Logger,
 	}
@@ -62,7 +62,7 @@ func (handler *ReviewHandler) Create() http.HandlerFunc {
 
 		authUserID, ok := r.Context().Value(middleware.ContextUsernameKey).(uint)
 		if !ok {
-			http.Error(w, "Auth username is not string", http.StatusUnauthorized)
+			http.Error(w, "Auth username is not uint", http.StatusUnauthorized)
 			return
 		}
 
@@ -74,13 +74,21 @@ func (handler *ReviewHandler) Create() http.HandlerFunc {
 
 		review := NewReview((*ReviewRequest)(body), authUserID)
 
-		_, err = handler.ReviewRepository.Create(review)
-		if err != nil {
+		review, err = handler.ReviewService.Create(review)
+		switch err {
+		case nil:
+			 break
+		case ErrFKViolated:
+			http.Error(w, err.Error(), http.StatusNotFound)
+			return
+		default:
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
-		w.WriteHeader(http.StatusCreated)
+		resBody := NewReviewResponse(review)
+
+		res.WriteDefault(w, http.StatusCreated, resBody, r.Header)
 	}
 }
 
@@ -92,21 +100,19 @@ func (handler *ReviewHandler) Get() http.HandlerFunc {
 			return
 		}
 
-		review, err := handler.ReviewRepository.Get(uint(review_id))
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+		review, err := handler.ReviewService.Get(uint(review_id))
+		switch err {
+		case nil:
+			 break
+		case ErrNotFound:
+			http.Error(w, err.Error(), http.StatusNotFound)
+			return
+		default:
+			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
-		body := &ReviewResponse{
-			ID: review.ID,
-			UserID: review.UserID,
-			ItemID: review.ItemID,
-			Rating: review.Rating,
-			Advantages: review.Advantages,
-			Disadvantages: review.Disadvantages,
-			Description: review.Description,
-		}
+		body := NewReviewResponse(review)
 
 		res.WriteDefault(w, http.StatusOK, body, r.Header)
 	}
@@ -114,8 +120,38 @@ func (handler *ReviewHandler) Get() http.HandlerFunc {
 
 func (handler *ReviewHandler) Update() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var test *ReviewResponse = nil
-		_ = test.ID
+		defer r.Body.Close()
+
+		authUserID, ok := r.Context().Value(middleware.ContextUsernameKey).(uint)
+		if !ok {
+			http.Error(w, "Auth username is not uint", http.StatusUnauthorized)
+			return
+		}
+
+		reviewID, err := strconv.ParseUint(r.PathValue("reviewID"), 10, 32)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		body, err := req.HandleBody[ReviewUpdateRequest](r)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		review := NewReview((*ReviewRequest)(body), authUserID)
+		review.ID = uint(reviewID)
+
+		updatedReview, err := handler.ReviewService.Update(review, authUserID)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		resBody := NewReviewResponse(updatedReview)
+
+		res.WriteDefault(w, http.StatusOK, resBody, r.Header)
 	}
 }
 
@@ -133,20 +169,18 @@ func (handler *ReviewHandler) Delete() http.HandlerFunc {
 			return
 		}
 
-		review, err := handler.ReviewRepository.Get(uint(reviewID))
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+		err = handler.ReviewService.Delete(uint(reviewID), authUserID)
+		switch err {
+		case nil:
+			 break
+		case ErrNotFound:
+			http.Error(w, err.Error(), http.StatusNotFound)
 			return
-		}
-
-		if review.UserID != authUserID {
-			http.Error(w, "You have not enough permissions to delete the review.", http.StatusUnauthorized)
+		case ErrNoPermission:
+			http.Error(w, err.Error(), http.StatusForbidden)
 			return
-		}
-
-		err = handler.ReviewRepository.Delete(uint(reviewID))
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
+		default:
+			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 
