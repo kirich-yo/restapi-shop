@@ -144,7 +144,16 @@ func (handler *ReviewHandler) Update() http.HandlerFunc {
 		review.ID = uint(reviewID)
 
 		updatedReview, err := handler.ReviewService.Update(review, authUserID)
-		if err != nil {
+		switch err {
+		case nil:
+			 break
+		case ErrNotFound:
+			http.Error(w, err.Error(), http.StatusNotFound)
+			return
+		case ErrNoPermission:
+			http.Error(w, err.Error(), http.StatusForbidden)
+			return
+		default:
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}

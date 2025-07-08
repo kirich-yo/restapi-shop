@@ -43,12 +43,12 @@ func (srv *ReviewService) Create(review *Review) (*Review, error) {
 }
 
 func (srv *ReviewService) Update(review *Review, authUserID uint) (*Review, error) {
-	_, err := srv.ReviewRepository.Get(review.ID)
+	oldReview, err := srv.ReviewRepository.Get(review.ID)
 
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return nil, ErrNotFound
 	}
-	if review.UserID != authUserID {
+	if oldReview.UserID != authUserID {
 		return nil, ErrNoPermission
 	}
 	if err != nil {

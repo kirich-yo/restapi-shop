@@ -24,7 +24,7 @@ type ReviewCreateRequest struct {
 
 type ReviewUpdateRequest struct {
 	XMLName         xml.Name   `json:"-" xml:"review"`
-	ItemID          uint       `json:"itemID" xml:"itemID"`
+	ItemID          uint       `json:"-"`
 	Rating          uint       `json:"rating" xml:"rating" validate:"omitempty,min=1,max=5"`
 	Advantages      string     `json:"advantages" xml:"advantages"`
 	Disadvantages   string     `json:"disadvantages" xml:"disadvantages"`
