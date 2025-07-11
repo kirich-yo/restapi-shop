@@ -178,6 +178,8 @@ paths:
           description: The client is not authorized.
         '403':
           description: The client does not have appropriate permissions to perform the operation.
+        '404':
+          description: Item not found.
         '500':
           description: Internal server error.
       security:
@@ -303,6 +305,8 @@ paths:
           description: The client is not authorized.
         '403':
           description: The client does not have appropriate permissions to perform the operation.
+        '404':
+          description: User not found.
       security:
         - sportshop_jwt: []
   /user/{username}/role:
@@ -684,6 +688,8 @@ paths:
           description: The client is not authorized.
         '403':
           description: The client does not have appropriate permissions to perform the operation.
+        '404':
+          description: Order not found.
       security:
         - sportshop_jwt: []
   /review:
@@ -743,7 +749,8 @@ paths:
           description: Invalid ID supplied.
         '404':
           description: Review not found.
-
+        '500':
+          description: Internal server error.
     patch:
       tags:
         - review
@@ -777,6 +784,8 @@ paths:
           description: The client does not have appropriate permissions to perform the operation.
         '404':
           description: Review not found.
+        '500':
+          description: Internal server error.
       security:
         - sportshop_jwt: []
     delete:
@@ -801,6 +810,10 @@ paths:
           description: The client is not authorized.
         '403':
           description: The client does not have appropriate permissions to perform the operation.
+        '404':
+          description: Review not found.
+        '500':
+          description: Internal server error.
       security:
         - sportshop_jwt: []
   /cart:
@@ -919,6 +932,8 @@ paths:
           description: The client is not authorized.
         '403':
           description: The client does not have appropriate permissions to perform the operation.
+        '404':
+          description: Cart not found.
       security:
         - sportshop_jwt: []
 components:
@@ -1101,7 +1116,7 @@ components:
           type: integer
           format: int32
           example: 123
-        amount:
+        quantity:
           type: integer
           format: int32
           example: 2
@@ -1122,7 +1137,7 @@ components:
           type: integer
           format: int32
           example: 123
-        amount:
+        quantity:
           type: integer
           format: int32
           example: 2
@@ -1254,7 +1269,7 @@ components:
                 type: integer
                 format: int32
                 example: 123
-              amount:
+              quantity:
                 type: integer
                 format: int32
                 example: 2
@@ -1265,7 +1280,7 @@ components:
                 type: integer
                 format: int32
                 example: 123
-              amount:
+              quantity:
                 type: integer
                 format: int32
                 example: 2
@@ -1327,7 +1342,7 @@ components:
                 type: integer
                 format: int32
                 example: 2
-              amount:
+              quantity:
                 type: integer
                 format: int32
                 example: 2
@@ -1338,7 +1353,7 @@ components:
                 type: integer
                 format: int32
                 example: 2
-              amount:
+              quantity:
                 type: integer
                 format: int32
                 example: 2

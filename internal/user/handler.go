@@ -9,7 +9,6 @@ import (
 	"restapi-sportshop/pkg/req"
 
 	"gorm.io/gorm"
-	"github.com/davecgh/go-spew/spew"
 )
 
 type UserHandler struct {
@@ -26,7 +25,7 @@ func NewUserHandler(smux *http.ServeMux, deps UserHandlerDeps) *UserHandler {
 	}
 
 	smux.HandleFunc("GET /user/{username}", handler.Get())
-	smux.HandleFunc("POST /user", handler.Create())
+	smux.HandleFunc("PATCH /user/{username}", handler.Update())
 	smux.HandleFunc("DELETE /user/{username}", handler.Delete())
 	smux.HandleFunc("GET /user/{username}/role", handler.GetRole())
 
@@ -60,18 +59,19 @@ func (handler *UserHandler) Get() http.HandlerFunc {
 	}
 }
 
-func (handler *UserHandler) Create() http.HandlerFunc {
+func (handler *UserHandler) Update() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		defer r.Body.Close()
 
-		body, err := req.HandleBody[UserRequest](r)
+		body, err := req.HandleBody[UserUpdateRequest](r)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		spew.Dump(body)
 
-		w.WriteHeader(http.StatusCreated)
+		_ = body
+
+		w.WriteHeader(http.StatusOK)
 	}
 }
 
