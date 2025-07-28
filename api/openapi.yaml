@@ -1,7 +1,7 @@
 openapi: 3.0.3
 info:
-  title: "Sport Shop"
-  description: This is an API reference for my sport shop pet project based on OAS 3.0 specification. Check out my other projects at [https://github.com/kirich-yo](https://github.com/kirich-yo).
+  title: "Online Shop"
+  description: This is an API reference for my online shop pet project based on OAS 3.0 specification. Check out my other projects at [https://github.com/kirich-yo](https://github.com/kirich-yo).
   contact:
     email: gdleader03@gmail.com
   license:
@@ -9,11 +9,11 @@ info:
     url: https://www.gnu.org/licenses/lgpl-3.0.html
   version: 1.0.0
 servers:
-  - url: https://development.restapi-sportshop.com/api/v1
+  - url: https://development.restapi-shop.com/api/v1
     description: Development server
-  - url: https://staging.restapi-sportshop.com/api/v1
+  - url: https://staging.restapi-shop.com/api/v1
     description: Staging server
-  - url: https://api.restapi-sportshop.com/api/v1
+  - url: https://api.restapi-shop.com/api/v1
     description: Production server
 tags:
   - name: auth
