@@ -5,10 +5,10 @@ import (
 	"log/slog"
 	"io"
 
-	"restapi-sportshop/configs"
-	"restapi-sportshop/pkg/jwt"
-	"restapi-sportshop/pkg/req"
-	"restapi-sportshop/pkg/middleware"
+	"restapi-shop/configs"
+	"restapi-shop/pkg/jwt"
+	"restapi-shop/pkg/req"
+	"restapi-shop/pkg/middleware"
 )
 
 type AuthHandler struct {

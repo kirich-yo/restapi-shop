@@ -7,7 +7,7 @@ import (
 	"encoding/xml"
 	"bufio"
 
-	"restapi-sportshop/pkg/form"
+	"restapi-shop/pkg/form"
 )
 
 func DecodeJSON[T any](r *http.Request) (*T, error) {

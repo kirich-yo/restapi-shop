@@ -6,7 +6,7 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 
-	"restapi-sportshop/pkg/db"
+	"restapi-shop/pkg/db"
 )
 
 type ReviewRepository struct {

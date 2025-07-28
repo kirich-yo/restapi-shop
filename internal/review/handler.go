@@ -5,10 +5,10 @@ import (
 	"strconv"
 	"log/slog"
 
-	"restapi-sportshop/configs"
-	"restapi-sportshop/pkg/req"
-	"restapi-sportshop/pkg/res"
-	"restapi-sportshop/pkg/middleware"
+	"restapi-shop/configs"
+	"restapi-shop/pkg/req"
+	"restapi-shop/pkg/res"
+	"restapi-shop/pkg/middleware"
 )
 
 type ReviewHandlerDeps struct {

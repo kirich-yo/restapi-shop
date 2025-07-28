@@ -6,7 +6,7 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/datatypes"
 
-	"restapi-sportshop/internal/review"
+	"restapi-shop/internal/review"
 )
 
 type User struct {

@@ -3,7 +3,7 @@ package db
 import (
 	"fmt"
 
-	"restapi-sportshop/configs"
+	"restapi-shop/configs"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"

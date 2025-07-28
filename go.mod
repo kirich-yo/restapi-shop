@@ -1,4 +1,4 @@
-module restapi-sportshop
+module restapi-shop
 
 go 1.23.4
 

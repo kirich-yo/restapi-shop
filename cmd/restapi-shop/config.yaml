@@ -1,0 +1,14 @@
+database_conn:
+  address: "127.0.0.1"
+  port: 5432
+  username: "kirich"
+  password: "#cRlc_7689!"
+  db_name: "sportshop"
+  conn_timeout: 10s
+auth_service:
+  secret: "l$AOjIYb^RLxEI2_`l*7q+5w9"
+  token_lifetime: 15m
+http_server:
+  port: 8081
+  timeout: 4s
+  idle_timeout: 60s

@@ -1,4 +1,3 @@
-
 package slogpretty
 
 import (

@@ -4,9 +4,10 @@ import (
 	"errors"
 	"time"
 	"net/http"
+	"strconv"
 
-	"restapi-sportshop/pkg/res"
-	"restapi-sportshop/pkg/req"
+	"restapi-shop/pkg/res"
+	"restapi-shop/pkg/req"
 
 	"gorm.io/gorm"
 )
@@ -77,6 +78,17 @@ func (handler *UserHandler) Update() http.HandlerFunc {
 
 func (handler *UserHandler) Delete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		userID, err := strconv.ParseUint(r.PathValue("userID"), 10, 32)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+
+		err = handler.UserRepository.Delete(uint(userID))
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
 	}
 }
 

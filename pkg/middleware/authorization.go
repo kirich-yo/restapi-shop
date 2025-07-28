@@ -5,8 +5,8 @@ import (
 	"strings"
 	"context"
 
-	"restapi-sportshop/configs"
-	"restapi-sportshop/pkg/jwt"
+	"restapi-shop/configs"
+	"restapi-shop/pkg/jwt"
 )
 
 const (

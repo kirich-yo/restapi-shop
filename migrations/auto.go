@@ -7,11 +7,12 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 
-	"restapi-sportshop/configs"
-	"restapi-sportshop/internal/user"
-	"restapi-sportshop/internal/item"
-	"restapi-sportshop/internal/review"
-	"restapi-sportshop/internal/role"
+	"restapi-shop/configs"
+	"restapi-shop/internal/user"
+	"restapi-shop/internal/item"
+	"restapi-shop/internal/review"
+	"restapi-shop/internal/role"
+	"restapi-shop/internal/cart"
 )
 
 func FormatDSN(db_conf *configs.DatabaseConnConfig) string {
@@ -40,5 +41,6 @@ func main() {
 		&item.Item{},
 		&review.Review{},
 		&role.Role{},
+		&cart.Cart{},
 	)
 }

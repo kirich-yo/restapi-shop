@@ -6,9 +6,9 @@ import (
 	"errors"
 	"log/slog"
 
-	"restapi-sportshop/pkg/res"
-	"restapi-sportshop/pkg/req"
-	"restapi-sportshop/pkg/middleware"
+	"restapi-shop/pkg/res"
+	"restapi-shop/pkg/req"
+	"restapi-shop/pkg/middleware"
 
 	"gorm.io/gorm"
 )
@@ -101,13 +101,13 @@ func (handler *ItemHandler) Create() http.HandlerFunc {
 
 func (handler *ItemHandler) Delete() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		item_id, err := strconv.ParseUint(r.PathValue("itemID"), 10, 32)
+		itemID, err := strconv.ParseUint(r.PathValue("itemID"), 10, 32)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
 
-		err = handler.ItemRepository.Delete(uint(item_id))
+		err = handler.ItemRepository.Delete(uint(itemID))
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return

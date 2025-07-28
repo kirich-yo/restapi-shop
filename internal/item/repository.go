@@ -3,7 +3,7 @@ package item
 import (
 	"errors"
 
-	"restapi-sportshop/pkg/db"
+	"restapi-shop/pkg/db"
 
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"

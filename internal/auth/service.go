@@ -4,7 +4,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"time"
 
-	"restapi-sportshop/internal/user"
+	"restapi-shop/internal/user"
 
 	"gorm.io/datatypes"
 )

@@ -3,7 +3,7 @@ package item
 import (
 	"gorm.io/gorm"
 
-	"restapi-sportshop/internal/review"
+	"restapi-shop/internal/review"
 )
 
 type Item struct {

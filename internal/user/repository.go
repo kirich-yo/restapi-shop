@@ -1,7 +1,7 @@
 package user
 
 import (
-	"restapi-sportshop/pkg/db"
+	"restapi-shop/pkg/db"
 )
 
 type UserRepository struct {
@@ -54,4 +54,9 @@ func (repo *UserRepository) Create(user *User) (*User, error) {
 	}
 
 	return user, nil
+}
+
+func (repo *UserRepository) Delete(userID uint) error {
+	result := repo.Database.DB.Delete(&User{}, userID)
+	return result.Error
 }

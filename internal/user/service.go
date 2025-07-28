@@ -39,7 +39,7 @@ func (srv *UserService) Update(user *User, authUserID uint) (*User, error) {
 }
 
 func (srv *UserService) Delete(userID, authUserID uint) error {
-	user, err := srv.UserRepository.Get(userID)
+	_, err := srv.UserRepository.Get(userID)
 
 	if errors.Is(err, gorm.ErrRecordNotFound) {
 		return ErrNotFound
