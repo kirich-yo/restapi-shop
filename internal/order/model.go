@@ -22,3 +22,6 @@ type Order struct {
 	ShipDate datatypes.Date `json:"ship_date"`
 	Status OrderStatus `json:"status"`
 }
+
+func NewOrder() *Order {
+}

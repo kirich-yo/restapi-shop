@@ -43,6 +43,7 @@ func NewItemHandler(smux *http.ServeMux, deps ItemHandlerDeps) *ItemHandler {
 	smux.Handle("POST /item", chain(handler.Create()))
 	smux.Handle("PATCH /item/{itemID}", chain(handler.Update()))
 	smux.Handle("DELETE /item/{itemID}", chain(handler.Delete()))
+	smux.Handle("GET /item/{itemID}/reviews", chain(handler.GetReviews()))
 
 	return handler
 }
@@ -153,5 +154,10 @@ func (handler *ItemHandler) Update() http.HandlerFunc {
 		}
 
 		res.WriteDefault(w, http.StatusOK, item, r.Header)
+	}
+}
+
+func (handler *ItemHandler) GetReviews() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
 	}
 }
